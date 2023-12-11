@@ -14,6 +14,6 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     authentication_classes = (JWTAuthentication, )
     permission_classes = (IsAuthenticated, )
 
-    def get_queryset(self):
+    def get_object(self):
         """Can change only the authenticated user"""
         return self.request.user
