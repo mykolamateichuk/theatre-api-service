@@ -37,6 +37,11 @@ class PlayViewSet(mixins.ListModelMixin,
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
 
+    @staticmethod
+    def _params_to_ints(qs):
+        """Converts a list of string IDs to a list of integers"""
+        return [int(str_id) for str_id in qs.split(",")]
+
     def get_serializer_class(self):
         if self.action == "list":
             return PlayListSerializer
@@ -44,6 +49,26 @@ class PlayViewSet(mixins.ListModelMixin,
             return PlayDetailSerializer
 
         return PlaySerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        play = self.request.query_params.get("play")
+        actors = self.request.query_params.get("actors")
+        genres = self.request.query_params.get("genres")
+
+        if play:
+            queryset = queryset.filter(title__icontains=play)
+
+        if actors:
+            actors_id = self._params_to_ints(actors)
+            queryset = queryset.filter(actor__id__in=actors_id)
+
+        if genres:
+            genres_id = self._params_to_ints(genres)
+            queryset = queryset.filter(genres__id__in=genres_id)
+
+        return queryset
 
 
 class TheatreHallViewSet(mixins.ListModelMixin,
@@ -74,6 +99,7 @@ class PerformanceViewSet(mixins.ListModelMixin,
             return PerformanceDetailSerializer
 
         return PerformanceListSerializer
+
 
 
 class ReservationViewSet(mixins.ListModelMixin,
