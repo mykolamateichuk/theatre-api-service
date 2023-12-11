@@ -59,7 +59,7 @@ class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,
                              related_name="reservations",
-                             on_delete="models.CASCADE")
+                             on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"Reservation made: {self.created_at}"
