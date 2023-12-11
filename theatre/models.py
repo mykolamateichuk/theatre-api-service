@@ -7,6 +7,13 @@ class Actor(models.Model):
     first_name = models.CharField(max_length=63)
     last_name = models.CharField(max_length=63)
 
+    class Meta:
+        ordering = ["last_name"]
+
+    @property
+    def full_name(self) -> str:
+        return str(self)
+
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
