@@ -2,10 +2,10 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from theatre.models import Actor, Genre, Play
+from theatre.models import Actor, Genre, Play, TheatreHall
 from theatre.paginations import ActorPagination
 from theatre.serializers import ActorSerializer, GenreSerializer, PlaySerializer, PlayListSerializer, \
-    PlayDetailSerializer
+    PlayDetailSerializer, TheatreHallListSerializer, TheatreHallDetailSerializer
 from theatre.permissions import IsAdminUserOrIsAuthenticatedReadOnly
 
 
@@ -45,11 +45,24 @@ class PlayViewSet(mixins.ListModelMixin,
         return PlaySerializer
 
 
+class TheatreHallViewSet(mixins.ListModelMixin,
+                         mixins.CreateModelMixin,
+                         mixins.RetrieveModelMixin,
+                         viewsets.GenericViewSet):
+    queryset = TheatreHall.objects.all()
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TheatreHallListSerializer
+        if self.action == "retrieve":
+            return TheatreHallDetailSerializer
+
+        return TheatreHallDetailSerializer
+
+
 class PerformanceViewSet(viewsets.ModelViewSet):
-    pass
-
-
-class TheatreHallViewSet(viewsets.ModelViewSet):
     pass
 
 
