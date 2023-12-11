@@ -65,6 +65,8 @@ class PerformanceDetailSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    performance = serializers.StringRelatedField(many=False, read_only=True)
+
     class Meta:
         model = Ticket
         fields = ("id", "row", "seat", "performance")
