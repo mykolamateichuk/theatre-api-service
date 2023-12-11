@@ -2,9 +2,10 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from theatre.models import Actor
+from theatre.models import Actor, Genre
 from theatre.paginations import ActorPagination
-from theatre.serializers import ActorSerializer
+from theatre.serializers import ActorSerializer, GenreSerializer
+from theatre.permissions import IsAdminUserOrIsAuthenticatedReadOnly
 
 
 class ActorViewSet(viewsets.ModelViewSet):
@@ -12,11 +13,14 @@ class ActorViewSet(viewsets.ModelViewSet):
     pagination_class = ActorPagination
     serializer_class = ActorSerializer
     authentication_classes = (JWTAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly, )
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    pass
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
 
 
 class PerformanceViewSet(viewsets.ModelViewSet):

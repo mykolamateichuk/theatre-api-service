@@ -21,6 +21,9 @@ class Actor(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=63)
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self) -> str:
         return f"{self.name}"
 
