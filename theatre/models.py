@@ -1,5 +1,7 @@
 from django.db import models
 
+from user.models import User
+
 
 class Actor(models.Model):
     first_name = models.CharField(max_length=63)
@@ -20,8 +22,8 @@ class Play(models.Model):
     title = models.CharField(max_length=63)
     description = models.TextField()
 
-    actors = models.ManyToManyField(Actor)
-    genres = models.ManyToManyField(Genre)
+    actors = models.ManyToManyField(Actor, related_name="plays")
+    genres = models.ManyToManyField(Genre, related_name="plays")
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -55,7 +57,9 @@ class Performance(models.Model):
 
 class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    # user = models.ForeignKey(User, related_name="reservations", on_delete="models.CASCADE")
+    user = models.ForeignKey(User,
+                             related_name="reservations",
+                             on_delete="models.CASCADE")
 
     def __str__(self) -> str:
         return f"Reservation made: {self.created_at}"
@@ -75,4 +79,3 @@ class Ticket(models.Model):
     def __str__(self) -> str:
         return (f"{self.performance}"
                 f"Row: {self.row}, Seat: {self.seat}")
-
