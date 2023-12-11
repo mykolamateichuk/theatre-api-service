@@ -80,10 +80,10 @@ class Ticket(models.Model):
     seat = models.IntegerField()
 
     performance = models.ForeignKey(Performance,
-                                    related_name="ticket",
+                                    related_name="tickets",
                                     on_delete=models.CASCADE)
     reservation = models.ForeignKey(Reservation,
-                                    related_name="ticket",
+                                    related_name="tickets",
                                     on_delete=models.CASCADE)
 
     def __str__(self) -> str:

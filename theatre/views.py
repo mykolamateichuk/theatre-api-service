@@ -2,11 +2,11 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from theatre.models import Actor, Genre, Play, TheatreHall, Performance
+from theatre.models import Actor, Genre, Play, TheatreHall, Performance, Reservation
 from theatre.paginations import ActorPagination
 from theatre.serializers import ActorSerializer, GenreSerializer, PlaySerializer, PlayListSerializer, \
     PlayDetailSerializer, TheatreHallListSerializer, TheatreHallDetailSerializer, PerformanceListSerializer, \
-    PerformanceDetailSerializer
+    PerformanceDetailSerializer, ReservationListSerializer, ReservationSerializer
 from theatre.permissions import IsAdminUserOrIsAuthenticatedReadOnly
 
 
@@ -76,6 +76,29 @@ class PerformanceViewSet(mixins.ListModelMixin,
         return PerformanceListSerializer
 
 
+class ReservationViewSet(mixins.ListModelMixin,
+                         mixins.CreateModelMixin,
+                         viewsets.GenericViewSet):
+    queryset = Reservation.objects.prefetch_related(
+        "tickets__performance__play__actors",
+        "tickets__performance__play__genres",
+        "tickets__performance__theatre_hall",
+        "tickets__theatre_hall"
+    )
+    serializer_class = ReservationSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
 
-class ReservationViewSet(viewsets.ModelViewSet):
-    pass
+    def get_queryset(self):
+        return Reservation.objects.filter(
+            user=self.request.user
+        )
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ReservationListSerializer
+
+        return ReservationSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
