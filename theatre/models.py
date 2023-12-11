@@ -62,7 +62,7 @@ class Performance(models.Model):
     show_time = models.DateTimeField()
 
     def __str__(self) -> str:
-        return f"{self.play.name} ({self.theatre_hall.name})"
+        return f"{self.show_time}: {self.play.title} ({self.theatre_hall.name})"
 
 
 class Reservation(models.Model):
