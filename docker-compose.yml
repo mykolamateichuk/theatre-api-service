@@ -1,0 +1,38 @@
+version: "3"
+
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+             python manage.py wait_for_connection
+      
+             python manage.py makemigrations user 
+             python manage.py migrate user
+      
+             python manage.py makemigrations theatre 
+             python manage.py migrate theatre 
+      
+             python manage.py makemigrations admin
+             python manage.py migrate admin
+      
+             python manage.py makemigrations sessions
+             python manage.py migrate sessions
+             
+             python manage.py runserver 0.0.0.0:8000
+      "
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
