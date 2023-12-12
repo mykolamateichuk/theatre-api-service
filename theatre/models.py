@@ -33,8 +33,10 @@ class Play(models.Model):
     title = models.CharField(max_length=63)
     description = models.TextField()
 
-    actors = models.ManyToManyField(Actor, related_name="plays")
-    genres = models.ManyToManyField(Genre, related_name="plays")
+    actors = models.ManyToManyField(Actor, related_name="plays",
+                                    null=True, blank=True)
+    genres = models.ManyToManyField(Genre, related_name="plays",
+                                    null=True, blank=True)
 
     class Meta:
         ordering = ["title"]
