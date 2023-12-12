@@ -1,3 +1,4 @@
+from django.db.models import F, Count
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -90,7 +91,16 @@ class PerformanceViewSet(mixins.ListModelMixin,
                          mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
                          viewsets.GenericViewSet):
-    queryset = Performance.objects.prefetch_related("play", "theatre_hall")
+    queryset = (
+        Performance.objects.all()
+        .prefetch_related("play", "theatre_hall")
+        .annotate(
+            tickets_left=(
+                F("theatre_hall__rows") * F("theatre_hall__seats_in_row")
+                - Count("tickets")
+            )
+        )
+    )
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
 
@@ -99,7 +109,6 @@ class PerformanceViewSet(mixins.ListModelMixin,
             return PerformanceDetailSerializer
 
         return PerformanceListSerializer
-
 
 
 class ReservationViewSet(mixins.ListModelMixin,
