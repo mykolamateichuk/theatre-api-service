@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from theatre.models import Actor, Genre, Play, TheatreHall, Performance, Reservation
-from theatre.paginations import ActorPagination
+from theatre.paginations import ActorPagination, ReservationPagination, PlayPagination
 from theatre.serializers import ActorSerializer, GenreSerializer, PlaySerializer, PlayListSerializer, \
     PlayDetailSerializer, TheatreHallListSerializer, TheatreHallDetailSerializer, PerformanceListSerializer, \
     PerformanceDetailSerializer, ReservationListSerializer, ReservationSerializer
@@ -37,6 +37,7 @@ class PlayViewSet(mixins.ListModelMixin,
     queryset = Play.objects.prefetch_related("actors", "genres")
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
+    pagination_class = PlayPagination
 
     @staticmethod
     def _params_to_ints(qs):
@@ -123,6 +124,7 @@ class ReservationViewSet(mixins.ListModelMixin,
     serializer_class = ReservationSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUserOrIsAuthenticatedReadOnly,)
+    pagination_class = ReservationPagination
 
     def get_queryset(self):
         return Reservation.objects.filter(
