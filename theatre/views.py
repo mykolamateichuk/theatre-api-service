@@ -51,24 +51,24 @@ class PlayViewSet(mixins.ListModelMixin,
         return PlaySerializer
 
     def get_queryset(self):
-        queryset = self.queryset
-
         play = self.request.query_params.get("play")
         actors = self.request.query_params.get("actors")
         genres = self.request.query_params.get("genres")
+
+        queryset = self.queryset
 
         if play:
             queryset = queryset.filter(title__icontains=play)
 
         if actors:
             actors_id = self._params_to_ints(actors)
-            queryset = queryset.filter(actor__id__in=actors_id)
+            queryset = queryset.filter(actors__id__in=actors_id)
 
         if genres:
             genres_id = self._params_to_ints(genres)
             queryset = queryset.filter(genres__id__in=genres_id)
 
-        return queryset
+        return queryset.distinct()
 
 
 class TheatreHallViewSet(mixins.ListModelMixin,
